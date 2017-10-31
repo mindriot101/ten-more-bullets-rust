@@ -84,7 +84,7 @@ impl Game {
     }
 
     fn update(&mut self, dt: f32) {
-        self.gun.update(dt);
+        self.gun.update(dt, &self.keymap);
     }
 
     fn handle_event(&mut self, event: Event) {
@@ -95,8 +95,6 @@ impl Game {
             Event::KeyUp { keycode: Some(keycode), .. } => self.keymap.clear(keycode.into()),
             _ => {}
         }
-
-        println!("{:?}", self.keymap.keys);
     }
 
     fn draw(&mut self) {
