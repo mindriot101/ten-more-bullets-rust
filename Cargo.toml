@@ -1,0 +1,8 @@
+[package]
+authors = ["Simon Walker <s.r.walker101@googlemail.com>"]
+name = "sdl2testing"
+version = "0.1.0"
+
+[dependencies]
+sdl2 = "0.30.0"
+time = "0.1.38"
