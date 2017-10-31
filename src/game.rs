@@ -7,6 +7,7 @@ use sdl2::pixels::Color;
 
 use gun::Gun;
 use entity::Entity;
+use keymap::KeyMap;
 
 const SCREEN_WIDTH: u32 = 640;
 const SCREEN_HEIGHT: u32 = 480;
@@ -23,6 +24,7 @@ pub struct Game {
     sdl_context: Sdl,
     running: bool,
     gun: Box<Entity>,
+    keymap: KeyMap,
 }
 
 impl Game {
@@ -42,6 +44,7 @@ impl Game {
             sdl_context: sdl_context,
             running: true,
             gun: Box::new(Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT)),
+            keymap: KeyMap::new(),
         }
     }
 
@@ -88,8 +91,12 @@ impl Game {
         match event {
             Event::Quit { .. } |
             Event::KeyDown { keycode: Some(Keycode::Escape), .. } => self.running = false,
+            Event::KeyDown { keycode: Some(keycode), .. } => self.keymap.mark(keycode.into()),
+            Event::KeyUp { keycode: Some(keycode), .. } => self.keymap.clear(keycode.into()),
             _ => {}
         }
+
+        println!("{:?}", self.keymap.keys);
     }
 
     fn draw(&mut self) {
