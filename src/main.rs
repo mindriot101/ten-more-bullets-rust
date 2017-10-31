@@ -5,6 +5,7 @@ mod gun;
 mod entity;
 mod game;
 mod keymap;
+mod bullet;
 
 fn main() {
     let mut game = game::Game::new();
