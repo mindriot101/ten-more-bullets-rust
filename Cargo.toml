@@ -4,5 +4,9 @@ name = "sdl2testing"
 version = "0.1.0"
 
 [dependencies]
-sdl2 = "0.30.0"
 time = "0.1.38"
+
+[dependencies.sdl2]
+version = "0.30.0"
+default-features = false
+features = ["ttf", "image", "mixer"]
