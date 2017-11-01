@@ -12,6 +12,7 @@ pub(crate) struct Gun {
     fired_last_frame: bool,
     bullets: Vec<Bullet>,
     dead_bullet_indices: Vec<usize>,
+    bullets_fired: u32,
 }
 
 impl Gun {
@@ -28,10 +29,16 @@ impl Gun {
             fired_last_frame: false,
             bullets: Vec::new(),
             dead_bullet_indices: Vec::new(),
+            bullets_fired: 0,
         }
     }
 
     fn fire(&mut self) {
+        self.bullets_fired += 1;
+        if self.bullets_fired >= 10 {
+            return;
+        }
+
         let new_bullet = Bullet::new(
             self.rect_geometry.x as _,
             (self.rect_geometry.y as f32) + ((self.rect_geometry.width() / 2) as f32),
