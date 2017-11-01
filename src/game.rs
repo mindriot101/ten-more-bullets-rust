@@ -23,7 +23,7 @@ pub struct Game {
     canvas: Canvas<Window>,
     sdl_context: Sdl,
     running: bool,
-    gun: Box<Entity>,
+    gun: Gun,
     keymap: KeyMap,
 }
 
@@ -43,7 +43,7 @@ impl Game {
             canvas: canvas,
             sdl_context: sdl_context,
             running: true,
-            gun: Box::new(Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT)),
+            gun: Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT),
             keymap: KeyMap::new(),
         }
     }
@@ -55,6 +55,10 @@ impl Game {
         loop {
             if !self.running {
                 break;
+            }
+
+            if self.gun.game_over() {
+                self.show_game_over_screen();
             }
 
             let now = ::time::precise_time_s();
@@ -82,6 +86,11 @@ impl Game {
             self.draw();
             self.cleanup();
         }
+    }
+
+    fn show_game_over_screen(&mut self) {
+        /* TODO(srw) finish implementing this */
+        self.running = false;
     }
 
     fn update(&mut self, dt: f32) {

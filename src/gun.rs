@@ -45,6 +45,10 @@ impl Gun {
         );
         self.bullets.push(new_bullet);
     }
+
+    pub(crate) fn game_over(&self) -> bool {
+        self.bullets_fired >= 10 && self.bullets.len() == 0
+    }
 }
 
 impl Entity for Gun {
