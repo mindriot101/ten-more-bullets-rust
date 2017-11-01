@@ -1,9 +1,10 @@
 use sdl2::Sdl;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::render::Canvas;
+use sdl2::render::{Canvas, TextureQuery};
 use sdl2::video::Window;
 use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 
 use gun::Gun;
 use entity::Entity;
@@ -19,15 +20,22 @@ const CLEAR_COLOUR: Color = Color {
     a: 0xFF,
 };
 
-pub struct Game {
+lazy_static! {
+    static ref TTF_CONTEXT: ::sdl2::ttf::Sdl2TtfContext = ::sdl2::ttf::init().unwrap();
+}
+
+pub struct Game<'a, 'b> {
     canvas: Canvas<Window>,
     sdl_context: Sdl,
     running: bool,
     gun: Gun,
     keymap: KeyMap,
+    debug_mode: bool,
+    texture_creator: ::sdl2::render::TextureCreator<::sdl2::video::WindowContext>,
+    font: ::sdl2::ttf::Font<'a, 'b>,
 }
 
-impl Game {
+impl<'a, 'b> Game<'a, 'b> {
     pub fn new() -> Self {
         let sdl_context = ::sdl2::init().unwrap();
         let video_subsystem = sdl_context.video().unwrap();
@@ -38,6 +46,12 @@ impl Game {
             .build()
             .unwrap();
         let canvas = window.into_canvas().present_vsync().build().unwrap();
+        let texture_creator: ::sdl2::render::TextureCreator<::sdl2::video::WindowContext> =
+            canvas.texture_creator();
+
+        let arial = TTF_CONTEXT
+            .load_font("run_tree/fonts/Roboto-Regular.ttf", 32)
+            .expect("cannot load arial.ttf");
 
         Game {
             canvas: canvas,
@@ -45,6 +59,9 @@ impl Game {
             running: true,
             gun: Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT),
             keymap: KeyMap::new(),
+            debug_mode: true,
+            texture_creator: texture_creator,
+            font: arial,
         }
     }
 
@@ -101,6 +118,7 @@ impl Game {
         match event {
             Event::Quit { .. } |
             Event::KeyDown { keycode: Some(Keycode::Escape), .. } => self.running = false,
+            Event::KeyDown { keycode: Some(Keycode::T), .. } => self.toggle_debug(),
             Event::KeyDown { keycode: Some(keycode), .. } => self.keymap.mark(keycode.into()),
             Event::KeyUp { keycode: Some(keycode), .. } => self.keymap.clear(keycode.into()),
             _ => {}
@@ -110,6 +128,11 @@ impl Game {
     fn draw(&mut self) {
         self.clear();
         self.gun.draw(&mut self.canvas);
+
+        if self.debug_mode {
+            self.render_debug_ui();
+        }
+
         self.blit();
     }
 
@@ -124,5 +147,30 @@ impl Game {
     fn clear(&mut self) {
         self.canvas.set_draw_color(CLEAR_COLOUR);
         self.canvas.clear();
+    }
+
+    fn toggle_debug(&mut self) {
+        self.debug_mode = !self.debug_mode;
+    }
+
+    fn render_debug_ui(&mut self) {
+        self.render_text("DEBUG", 0, 0);
+    }
+
+    fn render_text(&mut self, text: &str, x: i32, y: i32) {
+        let surface = self.font
+            .render(text)
+            .blended(Color::RGBA(255, 255, 255, 255))
+            .unwrap();
+        let texture = self.texture_creator
+            .create_texture_from_surface(&surface)
+            .expect("cannot create texture from font surface");
+
+        let TextureQuery { width, height, .. } = texture.query();
+
+        let target = rect!(x, y, width, height);
+        self.canvas.copy(&texture, None, Some(target)).expect(
+            "cannot render text",
+        );
     }
 }

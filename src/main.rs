@@ -1,5 +1,7 @@
 extern crate sdl2;
 extern crate time;
+#[macro_use]
+extern crate lazy_static;
 
 #[macro_use]
 mod macros;

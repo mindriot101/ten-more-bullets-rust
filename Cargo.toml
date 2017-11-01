@@ -4,9 +4,14 @@ name = "sdl2testing"
 version = "0.1.0"
 
 [dependencies]
+lazy_static = "0.2.9"
 time = "0.1.38"
 
 [dependencies.sdl2]
-version = "0.30.0"
 default-features = false
-features = ["ttf", "image", "mixer"]
+features = [
+    "ttf",
+    "image",
+    "mixer",
+]
+version = "0.30.0"
