@@ -80,6 +80,7 @@ impl Game {
                 accumulator -= SIMULATION_DT;
             }
             self.draw();
+            self.cleanup();
         }
     }
 
@@ -101,6 +102,10 @@ impl Game {
         self.clear();
         self.gun.draw(&mut self.canvas);
         self.blit();
+    }
+
+    fn cleanup(&mut self) {
+        self.gun.cleanup();
     }
 
     fn blit(&mut self) {

@@ -11,6 +11,7 @@ pub(crate) struct Gun {
     rect_geometry: Rect,
     fired_last_frame: bool,
     bullets: Vec<Bullet>,
+    dead_bullet_indices: Vec<usize>,
 }
 
 impl Gun {
@@ -26,6 +27,7 @@ impl Gun {
             ),
             fired_last_frame: false,
             bullets: Vec::new(),
+            dead_bullet_indices: Vec::new(),
         }
     }
 
@@ -51,15 +53,11 @@ impl Entity for Gun {
             self.fired_last_frame = false;
         }
 
-        /* TODO(srw) cloning here is a wasteful allocation. Try and find some way to scan through
-         * this array initially immutably, and then mutably later */
-        for (i, bullet) in self.bullets.clone().iter().enumerate() {
+        for (i, mut bullet) in self.bullets.iter_mut().enumerate() {
             if !bullet.active() {
-                self.bullets.remove(i);
+                self.dead_bullet_indices.push(i);
+                continue;
             }
-        }
-
-        for mut bullet in self.bullets.iter_mut() {
             bullet.update(dt, keymap);
         }
     }
@@ -71,7 +69,22 @@ impl Entity for Gun {
         );
 
         for bullet in self.bullets.iter() {
+            if !bullet.active() {
+                continue;
+            }
+
             bullet.draw(renderer);
+        }
+    }
+
+    fn cleanup(&mut self) {
+        for index in self.dead_bullet_indices.iter() {
+            self.bullets.remove(*index);
+        }
+        self.dead_bullet_indices.clear();
+
+        for bullet in self.bullets.iter_mut() {
+            bullet.cleanup();
         }
     }
 }

@@ -9,7 +9,6 @@ pub(crate) struct Bullet {
     y: f32,
     vx: f32,
     vy: f32,
-    rect_geometry: Rect,
 }
 
 impl Bullet {
@@ -19,12 +18,11 @@ impl Bullet {
             y: y,
             vx: 0.0,
             vy: -100.0,
-            rect_geometry: Rect::new(x as _, y as _, 5, 5),
         }
     }
 
     pub(crate) fn active(&self) -> bool {
-        true
+        self.y >= 0.0
     }
 }
 
@@ -33,15 +31,17 @@ impl ::entity::Entity for Bullet {
         let newx = self.x + dt * self.vx;
         let newy = self.y + dt * self.vy;
         self.x = newx;
-        self.y = newx;
-        self.rect_geometry.x = self.x as _;
-        self.rect_geometry.y = self.y as _;
+        self.y = newy;
     }
 
     fn draw(&self, renderer: &mut WindowCanvas) {
         renderer.set_draw_color(Color::RGB(0, 0, 0));
-        renderer.fill_rect(self.rect_geometry).expect(
+
+        let rect_geometry = Rect::new(self.x as _, self.y as _, 5, 5);
+        renderer.fill_rect(rect_geometry).expect(
             "cannot render bullet",
         );
     }
+
+    fn cleanup(&mut self) {}
 }
