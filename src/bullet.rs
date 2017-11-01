@@ -37,7 +37,7 @@ impl ::entity::Entity for Bullet {
     fn draw(&self, renderer: &mut WindowCanvas) {
         renderer.set_draw_color(Color::RGB(0, 0, 0));
 
-        let rect_geometry = Rect::new(self.x as _, self.y as _, 5, 5);
+        let rect_geometry = rect!(self.x, self.y, 5, 5);
         renderer.fill_rect(rect_geometry).expect(
             "cannot render bullet",
         );

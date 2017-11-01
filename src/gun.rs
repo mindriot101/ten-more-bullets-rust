@@ -20,12 +20,7 @@ impl Gun {
         let (width, height) = (20, 20);
 
         Gun {
-            rect_geometry: Rect::new(
-                (screen_width / 2) as _,
-                (screen_height - height) as _,
-                width,
-                height,
-            ),
+            rect_geometry: rect!((screen_width / 2), (screen_height - height), width, height),
             fired_last_frame: false,
             bullets: Vec::new(),
             dead_bullet_indices: Vec::new(),
