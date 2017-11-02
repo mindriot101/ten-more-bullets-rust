@@ -6,6 +6,7 @@ use sdl2::keyboard::Keycode;
 use entity::Entity;
 use keymap::KeyMap;
 use bullet::Bullet;
+use globals::DEVEL_MODE;
 
 pub(crate) struct Gun {
     rect_geometry: Rect,
@@ -13,11 +14,11 @@ pub(crate) struct Gun {
     bullets: Vec<Bullet>,
     dead_bullet_indices: Vec<usize>,
     bullets_fired: u32,
-    nbullets_max: i32,
+    nbullets_max: Option<u32>,
 }
 
 impl Gun {
-    pub(crate) fn new(screen_width: u32, screen_height: u32, nbullets_max: i32) -> Self {
+    pub(crate) fn new(screen_width: u32, screen_height: u32, nbullets_max: u32) -> Self {
         let (width, height) = (20, 20);
 
         Gun {
@@ -26,14 +27,21 @@ impl Gun {
             bullets: Vec::new(),
             dead_bullet_indices: Vec::new(),
             bullets_fired: 0,
-            nbullets_max: nbullets_max,
+            nbullets_max: if nbullets_max == 0 {
+                None
+            } else {
+                Some(nbullets_max)
+            },
         }
     }
 
     fn fire(&mut self) {
         self.bullets_fired += 1;
-        if self.bullets_fired >= (self.nbullets_max as _) {
-            return;
+        if let Some(nbullets_max) = self.nbullets_max {
+            let mut devel_mode = DEVEL_MODE.lock().unwrap();
+            if !*devel_mode && self.bullets_fired >= (nbullets_max as _) {
+                return;
+            }
         }
 
         let new_bullet = Bullet::new(
@@ -44,7 +52,8 @@ impl Gun {
     }
 
     pub(crate) fn game_over(&self) -> bool {
-        self.bullets_fired >= 10 && self.bullets.len() == 0
+        let devel_mode = DEVEL_MODE.lock().unwrap();
+        !*devel_mode && (self.bullets_fired >= 10) && (self.bullets.len() == 0)
     }
 }
 

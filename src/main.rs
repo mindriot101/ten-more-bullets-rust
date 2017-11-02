@@ -8,6 +8,7 @@ extern crate toml;
 
 #[macro_use]
 mod macros;
+mod globals;
 mod gun;
 mod entity;
 mod game;
