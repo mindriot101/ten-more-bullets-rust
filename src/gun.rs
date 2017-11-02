@@ -13,10 +13,11 @@ pub(crate) struct Gun {
     bullets: Vec<Bullet>,
     dead_bullet_indices: Vec<usize>,
     bullets_fired: u32,
+    nbullets_max: i32,
 }
 
 impl Gun {
-    pub(crate) fn new(screen_width: u32, screen_height: u32) -> Self {
+    pub(crate) fn new(screen_width: u32, screen_height: u32, nbullets_max: i32) -> Self {
         let (width, height) = (20, 20);
 
         Gun {
@@ -25,12 +26,13 @@ impl Gun {
             bullets: Vec::new(),
             dead_bullet_indices: Vec::new(),
             bullets_fired: 0,
+            nbullets_max: nbullets_max,
         }
     }
 
     fn fire(&mut self) {
         self.bullets_fired += 1;
-        if self.bullets_fired >= 10 {
+        if self.bullets_fired >= (self.nbullets_max as _) {
             return;
         }
 

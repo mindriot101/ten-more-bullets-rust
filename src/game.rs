@@ -9,6 +9,7 @@ use sdl2::rect::Rect;
 use gun::Gun;
 use entity::Entity;
 use keymap::KeyMap;
+use game_config::GameConfig;
 
 const SCREEN_WIDTH: u32 = 640;
 const SCREEN_HEIGHT: u32 = 480;
@@ -33,10 +34,12 @@ pub struct Game<'a, 'b> {
     debug_mode: bool,
     texture_creator: ::sdl2::render::TextureCreator<::sdl2::video::WindowContext>,
     font: ::sdl2::ttf::Font<'a, 'b>,
+    config: GameConfig,
 }
 
 impl<'a, 'b> Game<'a, 'b> {
-    pub fn new() -> Self {
+    pub fn new(config_filename: String) -> Self {
+        let game_config = GameConfig::parse(config_filename);
         let sdl_context = ::sdl2::init().unwrap();
         let video_subsystem = sdl_context.video().unwrap();
         let window = video_subsystem
@@ -57,18 +60,18 @@ impl<'a, 'b> Game<'a, 'b> {
             canvas: canvas,
             sdl_context: sdl_context,
             running: true,
-            gun: Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT),
+            gun: Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT, game_config.n_bullets),
             keymap: KeyMap::new(),
             debug_mode: true,
             texture_creator: texture_creator,
             font: arial,
+            config: game_config,
         }
     }
 
     pub fn run(&mut self) {
         let mut event_pump = self.sdl_context.event_pump().unwrap();
         let mut start_time = ::time::precise_time_s();
-        let mut accumulator = 0.0f32;
         loop {
             if !self.running {
                 break;
@@ -95,11 +98,7 @@ impl<'a, 'b> Game<'a, 'b> {
             }
 
 
-            accumulator += dt;
-            while accumulator >= SIMULATION_DT {
-                self.update(accumulator);
-                accumulator -= SIMULATION_DT;
-            }
+            self.update(dt);
             self.draw();
             self.cleanup();
         }
