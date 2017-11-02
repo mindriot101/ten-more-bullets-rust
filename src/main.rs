@@ -15,6 +15,7 @@ mod game;
 mod keymap;
 mod bullet;
 mod game_config;
+mod enemy;
 
 use std::env::args;
 
