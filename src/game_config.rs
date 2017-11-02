@@ -4,6 +4,8 @@ use std::io::Read;
 #[derive(Serialize, Deserialize)]
 pub(crate) struct GameConfig {
     pub(crate) n_bullets: i32,
+    pub(crate) screen_width: u32,
+    pub(crate) screen_height: u32,
 }
 
 impl GameConfig {

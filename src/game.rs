@@ -11,8 +11,6 @@ use entity::Entity;
 use keymap::KeyMap;
 use game_config::GameConfig;
 
-const SCREEN_WIDTH: u32 = 640;
-const SCREEN_HEIGHT: u32 = 480;
 const SIMULATION_DT: f32 = 0.016;
 const CLEAR_COLOUR: Color = Color {
     r: 0x32,
@@ -34,7 +32,6 @@ pub struct Game<'a, 'b> {
     debug_mode: bool,
     texture_creator: ::sdl2::render::TextureCreator<::sdl2::video::WindowContext>,
     font: ::sdl2::ttf::Font<'a, 'b>,
-    config: GameConfig,
 }
 
 impl<'a, 'b> Game<'a, 'b> {
@@ -43,7 +40,7 @@ impl<'a, 'b> Game<'a, 'b> {
         let sdl_context = ::sdl2::init().unwrap();
         let video_subsystem = sdl_context.video().unwrap();
         let window = video_subsystem
-            .window("SDL2", SCREEN_WIDTH, SCREEN_HEIGHT)
+            .window("SDL2", game_config.screen_width, game_config.screen_height)
             .position_centered()
             .opengl()
             .build()
@@ -60,12 +57,15 @@ impl<'a, 'b> Game<'a, 'b> {
             canvas: canvas,
             sdl_context: sdl_context,
             running: true,
-            gun: Gun::new(SCREEN_WIDTH, SCREEN_HEIGHT, game_config.n_bullets),
+            gun: Gun::new(
+                game_config.screen_width,
+                game_config.screen_height,
+                game_config.n_bullets,
+            ),
             keymap: KeyMap::new(),
             debug_mode: true,
             texture_creator: texture_creator,
             font: arial,
-            config: game_config,
         }
     }
 
