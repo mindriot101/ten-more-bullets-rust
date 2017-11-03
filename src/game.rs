@@ -5,12 +5,14 @@ use sdl2::render::{Canvas, TextureQuery};
 use sdl2::video::Window;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
+use rand::Rng;
 
 use gun::Gun;
 use entity::Entity;
 use keymap::KeyMap;
 use game_config::GameConfig;
 use globals::{TTF_CONTEXT, DEVEL_MODE};
+use enemy::Enemy;
 
 const SIMULATION_DT: f32 = 0.016;
 const CLEAR_COLOUR: Color = Color {
@@ -25,6 +27,8 @@ pub struct Game<'a, 'b> {
     sdl_context: Sdl,
     running: bool,
     gun: Gun,
+    #[allow(dead_code)]
+    enemies: Vec<Box<Enemy>>,
     keymap: KeyMap,
     texture_creator: ::sdl2::render::TextureCreator<::sdl2::video::WindowContext>,
     font: ::sdl2::ttf::Font<'a, 'b>,
@@ -58,6 +62,7 @@ impl<'a, 'b> Game<'a, 'b> {
                 game_config.screen_height,
                 game_config.n_bullets,
             ),
+            enemies: Vec::new(),
             keymap: KeyMap::new(),
             texture_creator: texture_creator,
             font: arial,
@@ -105,8 +110,19 @@ impl<'a, 'b> Game<'a, 'b> {
     }
 
     fn update(&mut self, dt: f32) {
+        if self.should_spawn_enemy() {
+            self.spawn_enemy();
+        }
+
         self.gun.update(dt, &self.keymap);
     }
+
+    fn should_spawn_enemy(&mut self) -> bool {
+        let mut rng = ::rand::thread_rng();
+        rng.gen()
+    }
+
+    fn spawn_enemy(&mut self) {}
 
     fn handle_event(&mut self, event: Event) {
         match event {

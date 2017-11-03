@@ -44,9 +44,10 @@ impl Gun {
             }
         }
 
+        let center_x = (self.rect_geometry.x as f32) + (self.rect_geometry.h as f32) / 2.0;
+        let center_y = (self.rect_geometry.y as f32) + ((self.rect_geometry.width() as f32) / 2.0);
         let new_bullet = Bullet::new(
-            self.rect_geometry.x as _,
-            (self.rect_geometry.y as f32) + ((self.rect_geometry.width() / 2) as f32),
+            center_x as _, center_y as _
         );
         self.bullets.push(new_bullet);
     }

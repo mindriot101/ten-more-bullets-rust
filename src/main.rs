@@ -5,6 +5,7 @@ extern crate lazy_static;
 #[macro_use]
 extern crate serde_derive;
 extern crate toml;
+extern crate rand;
 
 #[macro_use]
 mod macros;
